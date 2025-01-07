@@ -1,5 +1,3 @@
-// script.js
-
 // Инициализация Telegram WebApp
 Telegram.WebApp.ready();
 
@@ -25,11 +23,28 @@ images.forEach((img) => {
 // Логика скачивания
 downloadButton.addEventListener('click', () => {
     if (selectedImageUrl) {
-        const a = document.createElement('a');
-        a.href = selectedImageUrl;
-        a.download = selectedImageUrl.split('/').pop();
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
+        // Используем Telegram SDK для отправки сообщения о загрузке
+        Telegram.WebApp.showPopup({
+            title: "Скачивание",
+            message: "Вы собираетесь скачать изображение. Нажмите ОК для подтверждения.",
+            buttons: [
+                { id: "confirm", type: "ok", text: "OK" },
+                { id: "cancel", type: "close", text: "Отмена" },
+            ],
+        });
+
+        // Обработка результата нажатия
+        Telegram.WebApp.onEvent('popupClosed', (buttonId) => {
+            if (buttonId === "confirm") {
+                const a = document.createElement('a');
+                a.href = selectedImageUrl;
+                a.download = selectedImageUrl.split('/').pop();
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+            }
+        });
+    } else {
+        Telegram.WebApp.showAlert("Сначала выберите изображение!");
     }
 });
