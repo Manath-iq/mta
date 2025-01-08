@@ -20,29 +20,12 @@ images.forEach((img) => {
     });
 });
 
-// Логика скачивания
+// Логика скачивания через Telegram SDK
 downloadButton.addEventListener('click', () => {
     if (selectedImageUrl) {
-        // Используем Telegram SDK для отправки сообщения о загрузке
-        Telegram.WebApp.showPopup({
-            title: "Скачивание",
-            message: "Вы собираетесь скачать изображение. Нажмите ОК для подтверждения.",
-            buttons: [
-                { id: "confirm", type: "ok", text: "OK" },
-                { id: "cancel", type: "close", text: "Отмена" },
-            ],
-        });
-
-        // Обработка результата нажатия
-        Telegram.WebApp.onEvent('popupClosed', (buttonId) => {
-            if (buttonId === "confirm") {
-                const a = document.createElement('a');
-                a.href = selectedImageUrl;
-                a.download = selectedImageUrl.split('/').pop();
-                document.body.appendChild(a);
-                a.click();
-                document.body.removeChild(a);
-            }
+        Telegram.WebApp.downloadFile({
+            url: selectedImageUrl, // Полный HTTPS URL изображения
+            file_name: selectedImageUrl.split('/').pop() // Имя файла для скачивания
         });
     } else {
         Telegram.WebApp.showAlert("Сначала выберите изображение!");
